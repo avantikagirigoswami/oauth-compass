@@ -1,7 +1,17 @@
 # OAuth Compass — Take-Home Project Submission Report
 **Role:** APM Integrations Candidate  
-**Candidate:** Avantika Giri Goswami  
+**Candidate:** Avantika Girigoswami  
 **Source Repository:** [https://github.com/avantikagirigoswami/oauth-compass](https://github.com/avantikagirigoswami/oauth-compass)  
+**Video Demonstration:** `App Video.mp4` (Included in submission)
+
+---
+
+## Video Demonstration Overview (`App Video.mp4`)
+A full video demonstration is provided in `App Video.mp4` showcasing:
+1. **The 5 Diverse Integration Archetypes:** GitHub (`easy`), Slack (`moderate`), Google Cloud (`hard`), Notion (`moderate`), and Salesforce (`hard`).
+2. **Interactive Checklist & State Persistence:** Checking off steps with live progress indicators and persistent browser storage.
+3. **Managed OAuth vs. BYOA Comparison:** Clear guidance on when developers can use Composio/Nango managed connectors vs registering custom console apps.
+4. **Real-time Live Generation:** Submitting unfamiliar applications (Spotify, Discord, Linear) and watching the autonomous agent discover documentation, extract endpoints, categorize step owners, and render an interactive guide live.
 
 ---
 
@@ -73,6 +83,7 @@ OAuth readiness is categorized into three distinct tiers:
 
 ## 5. Quality Assurance & System Verification
 
+* **Video Demonstration:** Available in `App Video.mp4` showcasing real-time UI execution, 5 archetypes, and live generation.
 * **Automated Test Suite:** Executed 26 regression tests via `pytest backend/test_api.py -v` covering API contracts, SSRF prevention, case-insensitive queries, and live generation. **Result: 26 passed, 0 failed (100% pass rate).**
 * **Production Build:** Frontend compiles in 3.2s via Vite with 0 errors.
 * **Security Compliance:** Zero credentials or API keys committed to source control.

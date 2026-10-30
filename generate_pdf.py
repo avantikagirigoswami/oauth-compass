@@ -1,4 +1,5 @@
 import os
+import zipfile
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
 from reportlab.platypus import (
@@ -6,11 +7,17 @@ from reportlab.platypus import (
 )
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
+from pypdf import PdfReader, PdfWriter
 
-pdf_path = r"C:\Users\ggava\oauth-compass\OAuth_Compass_Take_Home_Submission.pdf"
+base_dir = r"C:\Users\ggava\oauth-compass"
+pdf_path_temp = os.path.join(base_dir, "OAuth_Compass_Report_Temp.pdf")
+pdf_path_final = os.path.join(base_dir, "OAuth_Compass_Take_Home_Submission_Avantika_Girigoswami.pdf")
+pdf_path_light = os.path.join(base_dir, "OAuth_Compass_Submission_Report_Avantika_Girigoswami.pdf")
+video_path = os.path.join(base_dir, "App Video.mp4")
+zip_path = os.path.join(base_dir, "OAuth_Compass_Submission_Avantika_Girigoswami.zip")
 
 doc = SimpleDocTemplate(
-    pdf_path,
+    pdf_path_temp,
     pagesize=letter,
     rightMargin=40,
     leftMargin=40,
@@ -25,8 +32,8 @@ title_style = ParagraphStyle(
     "DocTitle",
     parent=styles["Normal"],
     fontName="Helvetica-Bold",
-    fontSize=24,
-    leading=28,
+    fontSize=22,
+    leading=26,
     textColor=colors.HexColor("#1e293b"),
 )
 
@@ -34,68 +41,57 @@ subtitle_style = ParagraphStyle(
     "DocSubTitle",
     parent=styles["Normal"],
     fontName="Helvetica",
-    fontSize=12,
-    leading=16,
-    textColor=colors.HexColor("#64748b"),
+    fontSize=11,
+    leading=15,
+    textColor=colors.HexColor("#475569"),
+)
+
+video_badge_style = ParagraphStyle(
+    "VideoBadge",
+    parent=styles["Normal"],
+    fontName="Helvetica-Bold",
+    fontSize=9.5,
+    leading=13,
+    textColor=colors.HexColor("#1e3a8a"),
 )
 
 h1_style = ParagraphStyle(
     "Heading1_Custom",
     parent=styles["Heading1"],
     fontName="Helvetica-Bold",
-    fontSize=14,
-    leading=18,
+    fontSize=13,
+    leading=17,
     textColor=colors.HexColor("#1e3a8a"),
-    spaceBefore=14,
-    spaceAfter=6,
+    spaceBefore=12,
+    spaceAfter=5,
 )
 
 h2_style = ParagraphStyle(
     "Heading2_Custom",
     parent=styles["Heading2"],
     fontName="Helvetica-Bold",
-    fontSize=11,
-    leading=15,
+    fontSize=10.5,
+    leading=14,
     textColor=colors.HexColor("#334155"),
-    spaceBefore=10,
-    spaceAfter=4,
+    spaceBefore=8,
+    spaceAfter=3,
 )
 
 body_style = ParagraphStyle(
     "Body_Custom",
     parent=styles["Normal"],
     fontName="Helvetica",
-    fontSize=9,
-    leading=13,
+    fontSize=8.5,
+    leading=12,
     textColor=colors.HexColor("#1e293b"),
-    spaceAfter=6,
-)
-
-bullet_style = ParagraphStyle(
-    "Bullet_Custom",
-    parent=styles["Normal"],
-    fontName="Helvetica",
-    fontSize=8.5,
-    leading=12,
-    textColor=colors.HexColor("#334155"),
-    leftIndent=12,
-    spaceAfter=3,
-)
-
-callout_style = ParagraphStyle(
-    "Callout",
-    parent=styles["Normal"],
-    fontName="Helvetica-Oblique",
-    fontSize=8.5,
-    leading=12,
-    textColor=colors.HexColor("#1e3a8a"),
+    spaceAfter=5,
 )
 
 table_header_style = ParagraphStyle(
     "TableHeader",
     parent=styles["Normal"],
     fontName="Helvetica-Bold",
-    fontSize=8,
+    fontSize=7.5,
     leading=10,
     textColor=colors.white,
 )
@@ -104,8 +100,8 @@ table_cell_style = ParagraphStyle(
     "TableCell",
     parent=styles["Normal"],
     fontName="Helvetica",
-    fontSize=7.5,
-    leading=10,
+    fontSize=7,
+    leading=9.5,
     textColor=colors.HexColor("#1e293b"),
 )
 
@@ -113,10 +109,34 @@ story = []
 
 # Title & Metadata
 story.append(Paragraph("OAuth Compass — Take-Home Project Submission", title_style))
-story.append(Paragraph("APM Integrations Candidate Report | Author: Avantika Giri Goswami", subtitle_style))
-story.append(Paragraph("Repository: <u>https://github.com/avantikagirigoswami/oauth-compass</u>", subtitle_style))
-story.append(Spacer(1, 10))
-story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor("#2563eb"), spaceAfter=12))
+story.append(Paragraph("<b>APM Integrations Candidate:</b> Avantika Girigoswami", subtitle_style))
+story.append(Paragraph("<b>Source Repository:</b> <u>https://github.com/avantikagirigoswami/oauth-compass</u>", subtitle_style))
+story.append(Spacer(1, 4))
+
+# Video Walkthrough Callout Box
+video_box_data = [
+    [
+        Paragraph(
+            "<b>Walkthrough Video Demonstration:</b> <code>App Video.mp4</code> (Included with this submission)<br/>"
+            "• Demonstrates all 5 OAuth integration archetypes (GitHub, Slack, Google Cloud, Notion, Salesforce).<br/>"
+            "• Showcases real-time autonomous generation of unfamiliar apps (Spotify, Discord, Linear) with dynamic UI updates.<br/>"
+            "• Walks through interactive step checklists, persistent local state, and the Managed OAuth comparison card.",
+            video_badge_style
+        )
+    ]
+]
+video_box = Table(video_box_data, colWidths=[7.2*inch])
+video_box.setStyle(TableStyle([
+    ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#eff6ff")),
+    ("BOX", (0, 0), (-1, -1), 1, colors.HexColor("#93c5fd")),
+    ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+    ("TOPPADDING", (0, 0), (-1, -1), 6),
+    ("LEFTPADDING", (0, 0), (-1, -1), 10),
+    ("RIGHTPADDING", (0, 0), (-1, -1), 10),
+]))
+story.append(video_box)
+story.append(Spacer(1, 8))
+story.append(HRFlowable(width="100%", thickness=1.5, color=colors.HexColor("#2563eb"), spaceAfter=10))
 
 # 1. Executive Summary & Problem Understanding
 story.append(Paragraph("1. Problem Understanding: Why OAuth Breaks for AI Agent Builders", h1_style))
@@ -174,7 +194,7 @@ challenges_data = [
     ],
 ]
 
-ch_table = Table(challenges_data, colWidths=[1.8*inch, 2.3*inch, 2.9*inch])
+ch_table = Table(challenges_data, colWidths=[1.8*inch, 2.3*inch, 3.1*inch])
 ch_table.setStyle(TableStyle([
     ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1e3a8a")),
     ("ALIGN", (0, 0), (-1, -1), "LEFT"),
@@ -182,11 +202,11 @@ ch_table.setStyle(TableStyle([
     ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
     ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e1")),
     ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.HexColor("#f8fafc"), colors.white]),
-    ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
-    ("TOPPADDING", (0, 0), (-1, -1), 4),
+    ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+    ("TOPPADDING", (0, 0), (-1, -1), 3),
 ]))
 story.append(ch_table)
-story.append(Spacer(1, 10))
+story.append(Spacer(1, 8))
 
 # 3. Answering The 4 Core Assignment Requirements
 story.append(Paragraph("3. Addressing the Four Core Assignment Inquiries", h1_style))
@@ -265,22 +285,23 @@ audit_data = [
     ],
 ]
 
-audit_table = Table(audit_data, colWidths=[1.1*inch, 2.0*inch, 2.1*inch, 1.8*inch])
+audit_table = Table(audit_data, colWidths=[1.1*inch, 2.0*inch, 2.2*inch, 1.9*inch])
 audit_table.setStyle(TableStyle([
     ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1e3a8a")),
     ("ALIGN", (0, 0), (-1, -1), "LEFT"),
     ("VALIGN", (0, 0), (-1, -1), "TOP"),
     ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e1")),
     ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.HexColor("#f8fafc"), colors.white]),
-    ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
-    ("TOPPADDING", (0, 0), (-1, -1), 3),
+    ("BOTTOMPADDING", (0, 0), (-1, -1), 2.5),
+    ("TOPPADDING", (0, 0), (-1, -1), 2.5),
 ]))
 story.append(audit_table)
-story.append(Spacer(1, 10))
+story.append(Spacer(1, 8))
 
 # 5. Automated Verification & Delivery
 story.append(Paragraph("5. Quality Assurance & System Verification", h1_style))
 story.append(Paragraph(
+    "• <b>Walkthrough Video:</b> Provided in <code>App Video.mp4</code> demonstrating local execution, 5 archetypes, and live investigation.<br/>"
     "• <b>Automated Test Suite:</b> Executed 26 regression tests via <code>pytest backend/test_api.py -v</code> covering API contracts, SSRF prevention, case-insensitive queries, and live generation. <b>Result: 26 passed, 0 failed (100% pass rate).</b><br/>"
     "• <b>Production Build:</b> Frontend compiles in 3.2s via Vite with 0 errors.<br/>"
     "• <b>Security Compliance:</b> Zero credentials or API keys committed to source control.<br/>"
@@ -288,5 +309,37 @@ story.append(Paragraph(
     body_style
 ))
 
+# Build base PDF
 doc.build(story)
-print("PDF successfully generated at:", pdf_path)
+
+# 1. Save Light version (no 30MB attachment, ~10KB)
+with open(pdf_path_temp, "rb") as f_in, open(pdf_path_light, "wb") as f_out:
+    f_out.write(f_in.read())
+
+# 2. Save Embedded Attachment version (with App Video.mp4 embedded inside PDF)
+reader = PdfReader(pdf_path_temp)
+writer = PdfWriter()
+for page in reader.pages:
+    writer.add_page(page)
+
+if os.path.exists(video_path):
+    with open(video_path, "rb") as vf:
+        writer.add_attachment("App Video.mp4", vf.read())
+
+with open(pdf_path_final, "wb") as f_final:
+    writer.write(f_final)
+
+if os.path.exists(pdf_path_temp):
+    os.remove(pdf_path_temp)
+
+# 3. Create complete submission ZIP archive containing PDF, Video, and Markdown
+with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
+    zf.write(pdf_path_light, arcname="OAuth_Compass_Take_Home_Submission.pdf")
+    if os.path.exists(video_path):
+        zf.write(video_path, arcname="App Video.mp4")
+    zf.write(os.path.join(base_dir, "SUBMISSION_REPORT.md"), arcname="SUBMISSION_REPORT.md")
+    zf.write(os.path.join(base_dir, "README.md"), arcname="README.md")
+
+print("Created Light PDF:", pdf_path_light)
+print("Created PDF with embedded video:", pdf_path_final)
+print("Created All-in-One Submission ZIP:", zip_path)
