@@ -91,6 +91,9 @@ python -m venv .venv
 # Install dependencies
 pip install -r requirements.txt
 
+# Run automated tests (26 tests)
+pytest test_api.py -v
+
 # Start FastAPI server (runs on http://127.0.0.1:8000)
 uvicorn main:app --reload --port 8000
 ```
